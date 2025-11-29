@@ -54,15 +54,15 @@ impl Opt {
 #[derive(Debug)]
 enum WebError {
     NotFound,
-    InternalError(anyhow::Error),
+    InternalError,
 }
 
 impl<T> From<T> for WebError
 where
     T: Into<anyhow::Error>,
 {
-    fn from(error: T) -> Self {
-        Self::InternalError(error.into())
+    fn from(_error: T) -> Self {
+        Self::InternalError
     }
 }
 
@@ -108,7 +108,7 @@ impl IntoResponse for WebError {
     fn into_response(self) -> Response {
         let (status, error_message) = match self {
             Self::NotFound => (http::StatusCode::NOT_FOUND, "404 Not Found"),
-            Self::InternalError(_) => (
+            Self::InternalError => (
                 http::StatusCode::INTERNAL_SERVER_ERROR,
                 "500 Internal Server Error",
             ),
