@@ -17,10 +17,19 @@ pub fn release_time(year: i32, day: u32) -> Result<DateTime<Utc>> {
 
 /// Calculate the score for a puzzle based on the duration from release
 pub fn score_puzzle(completion_time: Duration) -> usize {
+    const NUM_DAYS_WITHOUT_PENALTY: usize = 7;
+    const MAX_SCORE: usize = 50;
+    const MIN_SCORE: usize = 10;
+    const PENALTY_PER_DAY: usize = 5;
+    // After the `NUM_DAYS_WITHOUT_PENALTY` number of days has passed,
+    // the score will be decreased by `PENALTY_PER_DAY` points per day.
     let num_days = completion_time.num_days() as usize;
-    if num_days > 8 {
-        10
+    if num_days <= NUM_DAYS_WITHOUT_PENALTY {
+        MAX_SCORE
     } else {
-        50 - 5 * num_days
+        let penalty_days = num_days - NUM_DAYS_WITHOUT_PENALTY;
+        let penalty = penalty_days * PENALTY_PER_DAY;
+        let score = MAX_SCORE.saturating_sub(penalty);
+        score.max(MIN_SCORE)
     }
 }
