@@ -1,2 +1,5 @@
 /target
 config.toml
+.idea/
+.vscode/
+aoc-leaderboard*.json
