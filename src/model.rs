@@ -14,7 +14,6 @@ pub enum Stars {
 pub struct Member {
     pub id: usize,
     pub name: String,
-    pub github: Option<String>,
 }
 
 #[derive(Debug)]
@@ -43,7 +42,6 @@ impl Scoreboard {
                         .as_ref()
                         .map(ToOwned::to_owned)
                         .unwrap_or_else(|| format!("(anonymous user #{})", leaderboard_member.id)),
-                    github: None,
                 };
 
                 let (stars, score) =
