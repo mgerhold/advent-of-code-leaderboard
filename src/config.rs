@@ -33,12 +33,6 @@ pub struct LeaderboardConfig {
     pub header: String,
 }
 
-#[derive(Debug)]
-pub struct Metadata {
-    pub year: i32,
-    pub members: HashMap<usize, MemberMetadata>,
-}
-
 #[derive(Debug, Deserialize)]
 pub struct MemberMetadata {
     pub repository: Option<String>,
