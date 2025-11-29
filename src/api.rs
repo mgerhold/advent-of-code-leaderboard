@@ -42,7 +42,7 @@ impl Client {
             tracing::info!("Refreshing cached leaderboard {} ({})", id, year);
             let client = reqwest::Client::new();
             let rsp = client
-                .get(&format!(
+                .get(format!(
                     "https://adventofcode.com/{}/leaderboard/private/view/{}.json",
                     year, id
                 ))

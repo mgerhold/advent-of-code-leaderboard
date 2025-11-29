@@ -28,8 +28,7 @@ fn is_unlocked(_state: &State, year: i32, day: u32) -> Result<bool, minijinja::E
 }
 
 fn left_pad(_state: &State, value: String, width: usize) -> Result<String, minijinja::Error> {
-    Ok(std::iter::repeat(' ')
-        .take(width.saturating_sub(value.len()))
+    Ok(std::iter::repeat_n(' ', width.saturating_sub(value.len()))
         .chain(value.chars())
         .collect())
 }
