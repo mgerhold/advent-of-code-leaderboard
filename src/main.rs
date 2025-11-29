@@ -69,6 +69,29 @@ where
 // API client that is shared across all requests (makes sure that we don't refresh simultaneously)
 type AocClient = Arc<Mutex<api::Client>>;
 
+async fn get_latest_leaderboard(
+    extract::Extension(cfg): extract::Extension<Arc<HashMap<String, LeaderboardConfig>>>,
+    extract::Extension(metadata): extract::Extension<
+        Arc<HashMap<i32, HashMap<usize, MemberMetadata>>>,
+    >,
+    extract::Extension(client): extract::Extension<AocClient>,
+) -> Result<response::Html<String>, WebError> {
+    // Find the latest leaderboard by year
+    let latest_leaderboard_cfg = cfg
+        .values()
+        .max_by_key(|cfg| cfg.year)
+        .ok_or(WebError::NotFound)?;
+
+    let slug = &latest_leaderboard_cfg.slug;
+    get_leaderboard(
+        extract::Path(slug.clone()),
+        extract::Extension(cfg),
+        extract::Extension(metadata),
+        extract::Extension(client),
+    )
+    .await
+}
+
 async fn get_leaderboard(
     extract::Path(slug): extract::Path<String>,
     extract::Extension(cfg): extract::Extension<Arc<HashMap<String, LeaderboardConfig>>>,
@@ -142,6 +165,7 @@ async fn main() -> Result<()> {
 
             let app = Router::new()
                 .route("/:slug", routing::get(get_leaderboard))
+                .route("/", routing::get(get_latest_leaderboard))
                 .layer(TraceLayer::new_for_http())
                 .layer(Extension(Arc::new(config)))
                 .layer(Extension(Arc::new(metadata)))
