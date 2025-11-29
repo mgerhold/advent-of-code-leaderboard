@@ -26,7 +26,6 @@ pub struct MemberScore {
 
 #[derive(Debug)]
 pub struct Scoreboard {
-    pub year: i32,
     pub scores: Vec<MemberScore>,
 }
 
@@ -82,6 +81,6 @@ impl Scoreboard {
         scores.sort_by_key(|member| (cmp::Reverse(member.score), member.member.id));
 
         // Sort
-        Self { year, scores }
+        Self { scores }
     }
 }
