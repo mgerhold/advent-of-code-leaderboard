@@ -27,9 +27,6 @@ pub struct LeaderboardConfig {
     pub year: i32, // We use i32 since that's what chrono expects
 
     #[serde(default)]
-    pub repositories: HashMap<usize, String>,
-
-    #[serde(default)]
     pub header: String,
 }
 
