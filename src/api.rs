@@ -13,13 +13,19 @@ const MIN_FETCH_INTERVAL: Duration = Duration::from_secs(15 * 60);
 pub struct Client {
     session: String,
     cache_dir: PathBuf,
+    contact_info: String,
 }
 
 impl Client {
-    pub fn new<S: Into<String>, P: Into<PathBuf>>(session: S, cache_dir: P) -> Self {
+    pub fn new<S: Into<String>, P: Into<PathBuf>, C: Into<String>>(
+        session: S,
+        cache_dir: P,
+        contact_info: C,
+    ) -> Self {
         Self {
             session: session.into(),
             cache_dir: cache_dir.into(),
+            contact_info: contact_info.into(),
         }
     }
 
@@ -44,8 +50,14 @@ impl Client {
         } else {
             // TODO: Detect if session is wrong since it redirects
             tracing::info!("Refreshing cached leaderboard {} ({})", id, year);
-            let client = reqwest::Client::new();
-            let rsp = client
+            const PACKAGE_NAME_AND_VERSION: &str =
+                concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
+            let user_agent = format!(
+                "{PACKAGE_NAME_AND_VERSION} (contact: {})",
+                &self.contact_info,
+            );
+            let client = reqwest::Client::builder().user_agent(&user_agent).build()?;
+            let response = client
                 .get(format!(
                     "https://adventofcode.com/{}/leaderboard/private/view/{}.json",
                     year, id
@@ -58,9 +70,9 @@ impl Client {
 
             // Save updated content in the cache
             let mut f = File::create(cache_path)?;
-            f.write_all(rsp.as_ref())?;
+            f.write_all(response.as_ref())?;
 
-            rsp
+            response
         };
 
         Ok(serde_json::from_str(&json_str)?)

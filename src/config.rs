@@ -11,6 +11,7 @@ pub struct Config {
     pub session: String,
     #[serde(default = "default_cache_dir")]
     pub cache_dir: PathBuf,
+    pub contact_info: String,
     pub leaderboard: Vec<LeaderboardConfig>,
 
     // pub metadata: Option<Vec<Metadata>>,
