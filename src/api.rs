@@ -6,6 +6,10 @@ use std::time::{Duration, SystemTime};
 
 use crate::parser::Leaderboard;
 
+// We're only allowed to fetch the JSON once every 15 min. See:
+// https://www.reddit.com/r/adventofcode/comments/1pa472d/reminder_please_throttle_your_aoc_traffic/
+const MIN_FETCH_INTERVAL: Duration = Duration::from_secs(15 * 60);
+
 pub struct Client {
     session: String,
     cache_dir: PathBuf,
@@ -24,13 +28,12 @@ impl Client {
             .cache_dir
             .join(format!("aoc-leaderboard-{}-{}.json", year, id));
 
-        // We're only allowed to fetch the JSON once every 15 min. Check if we have a cached
-        // version before trying
+        // Check if we have a cached version before trying to fetch
         let use_cached_json = if let Ok(m) = cache_path.as_path().metadata() {
             let last_modified = SystemTime::now()
                 .duration_since(m.modified()?)
                 .unwrap_or(Duration::ZERO);
-            last_modified < Duration::from_secs(15 * 60)
+            last_modified < MIN_FETCH_INTERVAL
         } else {
             false
         };
