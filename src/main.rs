@@ -173,8 +173,8 @@ async fn main() -> Result<()> {
 
             let bind: SocketAddr = host.parse()?;
             tracing::info!("Listening on {}", &bind);
-            let listener = tokio::net::TcpListener::bind(bind).await.unwrap();
-            axum::serve(listener, app).await.unwrap();
+            let listener = tokio::net::TcpListener::bind(bind).await?;
+            axum::serve(listener, app).await?;
         }
         Opt::Console { .. } => {
             let client = api::Client::new(config.session, config.cache_dir);
