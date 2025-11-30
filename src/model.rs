@@ -57,7 +57,7 @@ impl Scoreboard {
                                 stars[day - 1] = Stars::Both;
                                 score_puzzle(*part1 - released) + score_puzzle(*part2 - released)
                             }
-                            Some(Day { part1, part2: None }) => {
+                            Some(Day { part1, .. }) => {
                                 stars[day - 1] = Stars::First;
                                 score_puzzle(*part1 - released)
                             }
