@@ -71,9 +71,7 @@ type AocClient = Arc<Mutex<api::Client>>;
 
 async fn get_latest_leaderboard(
     Extension(cfg): Extension<Arc<HashMap<String, LeaderboardConfig>>>,
-    Extension(metadata): Extension<
-        Arc<HashMap<i32, HashMap<usize, MemberMetadata>>>,
-    >,
+    Extension(metadata): Extension<Arc<HashMap<i32, HashMap<usize, MemberMetadata>>>>,
     Extension(client): Extension<AocClient>,
 ) -> Result<response::Html<String>, WebError> {
     // Find the latest leaderboard by year
@@ -95,9 +93,7 @@ async fn get_latest_leaderboard(
 async fn get_leaderboard(
     extract::Path(slug): extract::Path<String>,
     Extension(cfg): Extension<Arc<HashMap<String, LeaderboardConfig>>>,
-    Extension(metadata): Extension<
-        Arc<HashMap<i32, HashMap<usize, MemberMetadata>>>,
-    >,
+    Extension(metadata): Extension<Arc<HashMap<i32, HashMap<usize, MemberMetadata>>>>,
     Extension(client): Extension<AocClient>,
 ) -> Result<response::Html<String>, WebError> {
     let leaderboard_cfg = if let Some(cfg) = cfg.get(&slug) {
