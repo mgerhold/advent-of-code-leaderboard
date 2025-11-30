@@ -1,4 +1,4 @@
-use minijinja::{context, Environment, State};
+use minijinja::{Environment, State, context};
 use serde::Serialize;
 use std::collections::HashMap;
 

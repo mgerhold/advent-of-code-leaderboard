@@ -1,6 +1,6 @@
 use anyhow::Result;
 use chrono::{DateTime, TimeZone, Utc};
-use serde::{de::Error as SerdeError, Deserialize};
+use serde::{Deserialize, de::Error as SerdeError};
 use serde_json::Value;
 use std::collections::HashMap;
 

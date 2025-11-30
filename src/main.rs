@@ -9,7 +9,7 @@ use tokio::sync::Mutex;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use axum::{extract, http, response, response::IntoResponse, routing, Extension, Router};
+use axum::{Extension, Router, extract, http, response, response::IntoResponse, routing};
 
 mod api;
 mod config;
