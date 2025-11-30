@@ -1,6 +1,6 @@
 use anyhow::Result;
-use serde::de::Error;
 use serde::Deserialize;
+use serde::de::Error;
 use std::collections::HashMap;
 use std::env;
 use std::io::Read;
@@ -11,6 +11,7 @@ pub struct Config {
     pub session: String,
     #[serde(default = "default_cache_dir")]
     pub cache_dir: PathBuf,
+    pub contact_info: String,
     pub leaderboard: Vec<LeaderboardConfig>,
 
     // pub metadata: Option<Vec<Metadata>>,
@@ -75,7 +76,7 @@ where
 }
 
 /// Return a default cache directory, and if unable to determine one, try the
-/// current working directory, and if that for some god forsaken reason fails
+/// current working directory, and if that for some godforsaken reason fails
 /// we use a temporary directory.
 fn default_cache_dir() -> PathBuf {
     dirs::cache_dir()

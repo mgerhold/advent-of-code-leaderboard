@@ -57,7 +57,7 @@ impl Scoreboard {
                                 stars[day - 1] = Stars::Both;
                                 score_puzzle(*part1 - released) + score_puzzle(*part2 - released)
                             }
-                            Some(Day { part1, part2: None }) => {
+                            Some(Day { part1, .. }) => {
                                 stars[day - 1] = Stars::First;
                                 score_puzzle(*part1 - released)
                             }
@@ -75,7 +75,7 @@ impl Scoreboard {
             })
             .collect();
 
-        // Use ID as a discirminator to ensure deterministic result
+        // Use ID as a discriminator to ensure deterministic results
         scores.sort_by_key(|member| (cmp::Reverse(member.score), member.member.id));
 
         // Sort

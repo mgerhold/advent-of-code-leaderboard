@@ -9,7 +9,7 @@ use tokio::sync::Mutex;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use axum::{extract, http, response, response::IntoResponse, routing, Extension, Router};
+use axum::{Extension, Router, extract, http, response, response::IntoResponse, routing};
 
 mod api;
 mod config;
@@ -45,8 +45,8 @@ enum Opt {
 impl Opt {
     fn config_path(&self) -> &Path {
         match self {
-            Opt::Server { ref config, .. } => config,
-            Opt::Console { ref config, .. } => config,
+            Opt::Server { config, .. } => config,
+            Opt::Console { config, .. } => config,
         }
     }
 }
@@ -70,11 +70,9 @@ where
 type AocClient = Arc<Mutex<api::Client>>;
 
 async fn get_latest_leaderboard(
-    extract::Extension(cfg): extract::Extension<Arc<HashMap<String, LeaderboardConfig>>>,
-    extract::Extension(metadata): extract::Extension<
-        Arc<HashMap<i32, HashMap<usize, MemberMetadata>>>,
-    >,
-    extract::Extension(client): extract::Extension<AocClient>,
+    Extension(cfg): Extension<Arc<HashMap<String, LeaderboardConfig>>>,
+    Extension(metadata): Extension<Arc<HashMap<i32, HashMap<usize, MemberMetadata>>>>,
+    Extension(client): Extension<AocClient>,
 ) -> Result<response::Html<String>, WebError> {
     // Find the latest leaderboard by year
     let latest_leaderboard_cfg = cfg
@@ -85,20 +83,18 @@ async fn get_latest_leaderboard(
     let slug = &latest_leaderboard_cfg.slug;
     get_leaderboard(
         extract::Path(slug.clone()),
-        extract::Extension(cfg),
-        extract::Extension(metadata),
-        extract::Extension(client),
+        Extension(cfg),
+        Extension(metadata),
+        Extension(client),
     )
     .await
 }
 
 async fn get_leaderboard(
     extract::Path(slug): extract::Path<String>,
-    extract::Extension(cfg): extract::Extension<Arc<HashMap<String, LeaderboardConfig>>>,
-    extract::Extension(metadata): extract::Extension<
-        Arc<HashMap<i32, HashMap<usize, MemberMetadata>>>,
-    >,
-    extract::Extension(client): extract::Extension<AocClient>,
+    Extension(cfg): Extension<Arc<HashMap<String, LeaderboardConfig>>>,
+    Extension(metadata): Extension<Arc<HashMap<i32, HashMap<usize, MemberMetadata>>>>,
+    Extension(client): Extension<AocClient>,
 ) -> Result<response::Html<String>, WebError> {
     let leaderboard_cfg = if let Some(cfg) = cfg.get(&slug) {
         cfg
@@ -155,7 +151,7 @@ async fn main() -> Result<()> {
                 ))
                 .with(tracing_subscriber::fmt::layer())
                 .init();
-            let client = api::Client::new(config.session, config.cache_dir);
+            let client = api::Client::new(config.session, config.cache_dir, &config.contact_info)?;
             let metadata = config.metadata;
             let config = config
                 .leaderboard
@@ -164,7 +160,7 @@ async fn main() -> Result<()> {
                 .collect::<HashMap<_, _>>();
 
             let app = Router::new()
-                .route("/:slug", routing::get(get_leaderboard))
+                .route("/{slug}", routing::get(get_leaderboard))
                 .route("/", routing::get(get_latest_leaderboard))
                 .layer(TraceLayer::new_for_http())
                 .layer(Extension(Arc::new(config)))
@@ -173,11 +169,11 @@ async fn main() -> Result<()> {
 
             let bind: SocketAddr = host.parse()?;
             tracing::info!("Listening on {}", &bind);
-            let listener = tokio::net::TcpListener::bind(bind).await.unwrap();
-            axum::serve(listener, app).await.unwrap();
+            let listener = tokio::net::TcpListener::bind(bind).await?;
+            axum::serve(listener, app).await?;
         }
         Opt::Console { .. } => {
-            let client = api::Client::new(config.session, config.cache_dir);
+            let client = api::Client::new(config.session, config.cache_dir, &config.contact_info)?;
             let empty_metadata = HashMap::new();
             for leaderboard_cfg in config.leaderboard.into_iter() {
                 let leaderboard = client

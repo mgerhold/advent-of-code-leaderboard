@@ -1,0 +1,36 @@
+session = "session cookie obtained from https://adventofcode.com"
+
+# Directory where cached JSON API responses are saved (we're only allowed to
+# refresh once every 15 minutes). If this isn't set it'll try to find a
+# suitable cache directory on its own
+cache_dir = "./cache"
+
+# Contant info to be included in the `User-Agent` header
+contact_info = "e.g. an email address and a link to a GitHub repository"
+
+# You can have as many leaderboards as you want, just duplicate the section below
+[[leaderboard]]
+id = # The unique ID of an existing private leaderboard
+year = 2025
+name = "Name of your Leaderboard"
+slug = "2025"  # URL slug for this board
+code = # Invite code for this private leaderboard
+
+# Optional header to display on top of the leaderboard. Put some pretty ASCII
+# art here :)
+header = """
+  .-""-.
+ /,..___\
+() {_____}
+  (/-@-@-\\)
+  {`-=^=-'}
+  {  `-'  }
+   {     }
+    `---
+"""
+
+[[metadata]]
+year = 2025
+# You can include links to solutions for each year, e.g.:
+1234567 = { repository = "Link to where you keep your solutions" }
+# Add entries here for other users as desired

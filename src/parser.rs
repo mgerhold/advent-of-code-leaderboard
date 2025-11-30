@@ -1,6 +1,6 @@
 use anyhow::Result;
 use chrono::{DateTime, TimeZone, Utc};
-use serde::{de::Error as SerdeError, Deserialize};
+use serde::{Deserialize, de::Error as SerdeError};
 use serde_json::Value;
 use std::collections::HashMap;
 
@@ -34,7 +34,7 @@ use std::collections::HashMap;
 ///
 /// - If a user has not completed any stars for a day, it'll not be in the dictionary
 /// - If a user has completed the first but not the second task, the second task will be absent
-///   from the from the dictionary.
+///   from the dictionary.
 /// - If a user is marked as anonymous they'll not have a name key.
 /// - There is no way to get the associated GitHub of a user through the JSON.
 
@@ -85,7 +85,7 @@ fn parse_json_value_ts<E: serde::de::Error>(value: &Value) -> Result<DateTime<Ut
             .timestamp_opt(n.parse().map_err(E::custom)?, 0)
             .single()
             .ok_or_else(|| E::custom("invalid timestamp"))?),
-        _ => Err(E::custom("invalid timstamp")),
+        _ => Err(E::custom("invalid timestamp")),
     }
 }
 

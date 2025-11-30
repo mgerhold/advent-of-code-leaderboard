@@ -6,17 +6,31 @@ use std::time::{Duration, SystemTime};
 
 use crate::parser::Leaderboard;
 
+// We're only allowed to fetch the JSON once every 15 min. See:
+// https://www.reddit.com/r/adventofcode/comments/1pa472d/reminder_please_throttle_your_aoc_traffic/
+const MIN_FETCH_INTERVAL: Duration = Duration::from_secs(15 * 60);
+
 pub struct Client {
     session: String,
     cache_dir: PathBuf,
+    client: reqwest::Client,
 }
 
 impl Client {
-    pub fn new<S: Into<String>, P: Into<PathBuf>>(session: S, cache_dir: P) -> Self {
-        Self {
+    pub fn new<S: Into<String>, P: Into<PathBuf>>(
+        session: S,
+        cache_dir: P,
+        contact_info: &str,
+    ) -> Result<Self> {
+        const PACKAGE_NAME_AND_VERSION: &str =
+            concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
+        let user_agent = format!("{PACKAGE_NAME_AND_VERSION} (contact: {})", contact_info);
+        let client = reqwest::Client::builder().user_agent(&user_agent).build()?;
+        Ok(Self {
             session: session.into(),
             cache_dir: cache_dir.into(),
-        }
+            client,
+        })
     }
 
     pub async fn fetch(&self, year: i32, id: usize) -> Result<Leaderboard> {
@@ -24,24 +38,24 @@ impl Client {
             .cache_dir
             .join(format!("aoc-leaderboard-{}-{}.json", year, id));
 
-        // We're only allowed to fetch the JSON once every 15 min. Check if we have a cached
-        // version before trying
+        // Check if we have a cached version before trying to fetch
         let use_cached_json = if let Ok(m) = cache_path.as_path().metadata() {
             let last_modified = SystemTime::now()
                 .duration_since(m.modified()?)
                 .unwrap_or(Duration::ZERO);
-            last_modified < Duration::from_secs(15 * 60)
+            last_modified < MIN_FETCH_INTERVAL
         } else {
             false
         };
 
         let json_str = if use_cached_json {
+            tracing::info!("Using cached leaderboard {} ({})", id, year);
             std::fs::read_to_string(cache_path)?
         } else {
             // TODO: Detect if session is wrong since it redirects
             tracing::info!("Refreshing cached leaderboard {} ({})", id, year);
-            let client = reqwest::Client::new();
-            let rsp = client
+            let response = self
+                .client
                 .get(format!(
                     "https://adventofcode.com/{}/leaderboard/private/view/{}.json",
                     year, id
@@ -54,9 +68,9 @@ impl Client {
 
             // Save updated content in the cache
             let mut f = File::create(cache_path)?;
-            f.write_all(rsp.as_ref())?;
+            f.write_all(response.as_ref())?;
 
-            rsp
+            response
         };
 
         Ok(serde_json::from_str(&json_str)?)
