@@ -70,11 +70,11 @@ where
 type AocClient = Arc<Mutex<api::Client>>;
 
 async fn get_latest_leaderboard(
-    extract::Extension(cfg): extract::Extension<Arc<HashMap<String, LeaderboardConfig>>>,
-    extract::Extension(metadata): extract::Extension<
+    Extension(cfg): Extension<Arc<HashMap<String, LeaderboardConfig>>>,
+    Extension(metadata): Extension<
         Arc<HashMap<i32, HashMap<usize, MemberMetadata>>>,
     >,
-    extract::Extension(client): extract::Extension<AocClient>,
+    Extension(client): Extension<AocClient>,
 ) -> Result<response::Html<String>, WebError> {
     // Find the latest leaderboard by year
     let latest_leaderboard_cfg = cfg
@@ -85,20 +85,20 @@ async fn get_latest_leaderboard(
     let slug = &latest_leaderboard_cfg.slug;
     get_leaderboard(
         extract::Path(slug.clone()),
-        extract::Extension(cfg),
-        extract::Extension(metadata),
-        extract::Extension(client),
+        Extension(cfg),
+        Extension(metadata),
+        Extension(client),
     )
     .await
 }
 
 async fn get_leaderboard(
     extract::Path(slug): extract::Path<String>,
-    extract::Extension(cfg): extract::Extension<Arc<HashMap<String, LeaderboardConfig>>>,
-    extract::Extension(metadata): extract::Extension<
+    Extension(cfg): Extension<Arc<HashMap<String, LeaderboardConfig>>>,
+    Extension(metadata): Extension<
         Arc<HashMap<i32, HashMap<usize, MemberMetadata>>>,
     >,
-    extract::Extension(client): extract::Extension<AocClient>,
+    Extension(client): Extension<AocClient>,
 ) -> Result<response::Html<String>, WebError> {
     let leaderboard_cfg = if let Some(cfg) = cfg.get(&slug) {
         cfg
