@@ -45,8 +45,8 @@ enum Opt {
 impl Opt {
     fn config_path(&self) -> &Path {
         match self {
-            Opt::Server { ref config, .. } => config,
-            Opt::Console { ref config, .. } => config,
+            Opt::Server { config, .. } => config,
+            Opt::Console { config, .. } => config,
         }
     }
 }
