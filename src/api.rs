@@ -39,6 +39,7 @@ impl Client {
         };
 
         let json_str = if use_cached_json {
+            tracing::info!("Using cached leaderboard {} ({})", id, year);
             std::fs::read_to_string(cache_path)?
         } else {
             // TODO: Detect if session is wrong since it redirects
