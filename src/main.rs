@@ -151,7 +151,7 @@ async fn main() -> Result<()> {
                 ))
                 .with(tracing_subscriber::fmt::layer())
                 .init();
-            let client = api::Client::new(config.session, config.cache_dir, config.contact_info);
+            let client = api::Client::new(config.session, config.cache_dir, &config.contact_info)?;
             let metadata = config.metadata;
             let config = config
                 .leaderboard
@@ -173,7 +173,7 @@ async fn main() -> Result<()> {
             axum::serve(listener, app).await?;
         }
         Opt::Console { .. } => {
-            let client = api::Client::new(config.session, config.cache_dir, config.contact_info);
+            let client = api::Client::new(config.session, config.cache_dir, &config.contact_info)?;
             let empty_metadata = HashMap::new();
             for leaderboard_cfg in config.leaderboard.into_iter() {
                 let leaderboard = client
