@@ -54,7 +54,8 @@ impl Client {
         } else {
             // TODO: Detect if session is wrong since it redirects
             tracing::info!("Refreshing cached leaderboard {} ({})", id, year);
-            let response = self.client
+            let response = self
+                .client
                 .get(format!(
                     "https://adventofcode.com/{}/leaderboard/private/view/{}.json",
                     year, id
