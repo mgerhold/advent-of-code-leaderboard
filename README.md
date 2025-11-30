@@ -3,7 +3,7 @@ Advent of Code Leaderboard
 This repository provides an alternative leaderboard scoring for
 [Advent of Code](https://adventofcode.com/).
 
-By default Advent of Code scores participants by how quickly they solve the
+By default, Advent of Code scores participants by how quickly they solve the
 problem compared to everybody else on the same leaderboard. I dislike this since
 it encourages participants to use whatever language they are most comfortable
 in and rush the solution.

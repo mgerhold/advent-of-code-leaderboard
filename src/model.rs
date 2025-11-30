@@ -75,7 +75,7 @@ impl Scoreboard {
             })
             .collect();
 
-        // Use ID as a discirminator to ensure deterministic result
+        // Use ID as a discriminator to ensure deterministic results
         scores.sort_by_key(|member| (cmp::Reverse(member.score), member.member.id));
 
         // Sort

@@ -75,7 +75,7 @@ where
 }
 
 /// Return a default cache directory, and if unable to determine one, try the
-/// current working directory, and if that for some god forsaken reason fails
+/// current working directory, and if that for some godforsaken reason fails
 /// we use a temporary directory.
 fn default_cache_dir() -> PathBuf {
     dirs::cache_dir()
