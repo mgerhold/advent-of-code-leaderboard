@@ -164,7 +164,7 @@ async fn main() -> Result<()> {
                 .collect::<HashMap<_, _>>();
 
             let app = Router::new()
-                .route("/:slug", routing::get(get_leaderboard))
+                .route("/{slug}", routing::get(get_leaderboard))
                 .route("/", routing::get(get_latest_leaderboard))
                 .layer(TraceLayer::new_for_http())
                 .layer(Extension(Arc::new(config)))
