@@ -48,6 +48,16 @@ pub fn render_template(
     let mut last_score = 0;
     let mut curr_place = 0;
     let mut leaderboard = Vec::new();
+    const FIRST_YEAR_OF_REDUCED_MAX_STARS: i32 = 2025;
+    const NUM_REGULAR_MAX_STARS: usize = 25;
+    const NUM_REDUCED_MAX_STARS: usize = 12;
+
+    let num_days = if cfg.year >= FIRST_YEAR_OF_REDUCED_MAX_STARS {
+        NUM_REDUCED_MAX_STARS
+    } else {
+        NUM_REGULAR_MAX_STARS
+    };
+
     for (i, member) in scoreboard.scores.iter().enumerate() {
         // Check if participant is tied with previous participant. If so reuse place
         if member.score != last_score {
@@ -84,6 +94,7 @@ pub fn render_template(
         year => cfg.year,
         header => cfg.header,
         code => cfg.code,
+        num_days => num_days,
         leaderboard => leaderboard,
     ))
     .unwrap()

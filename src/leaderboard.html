@@ -100,7 +100,7 @@
 
 <h1>{{ name }} <span class="star-first-only">({{ year }})</span></h1>
     <span class="days">
-        {% for day in range(1, 26) %}
+        {% for day in range(1, num_days + 1) %}
             {%- with is_unlocked = is_unlocked(year, day) -%}
             {%- if is_unlocked %}<a href="https://adventofcode.com/{{ year }}/day/{{ day }}">{% else %}<span>{% endif -%}
                 {%- if day < 10 -%}
@@ -113,7 +113,7 @@
         {% endfor %}
     </span>
 {% for l in leaderboard -%}
-{{ l.place|left_pad(2) }}) {% for cls in l.star_classes %}<span class="{{ cls }}">*</span>{% endfor %} {{ l.score|left_pad(4) }} {% if l.repository == "" %}<span>{{ l.name }}</span>{% else %}<a href="{{ l.repository }}">{{ l.name }}</a>{% endif %}
+{{ l.place|left_pad(2) }}) {% for day in range(0, num_days) %}<span class="{{ l.star_classes[day] }}">*</span>{% endfor %} {{ l.score|left_pad(4) }} {% if l.repository == "" %}<span>{{ l.name }}</span>{% else %}<a href="{{ l.repository }}">{{ l.name }}</a>{% endif %}
 {% endfor %}
 
 <span class="star-both">Gold</span> indicates the user got both stars for that day, <span class="star-first-only">silver</span> means just the first
